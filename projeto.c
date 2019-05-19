@@ -26,6 +26,7 @@ typedef struct SescolaSamba{
     char nomeEscola[20];
     char nomeResponsavelEscola[20];
 
+
 }escolas;
 //funcao mostra o tamanho de uma string
 int stringSize(char * string){
@@ -37,7 +38,7 @@ int stringSize(char * string){
 }
 void cadastrarEscola(escolas *escola, int cont){
     int tamanhoNome;
-    if(cont<=1){
+    if(cont<=9){
         do{
             printf("Digite o nome da Escola de Samba: \n");
             scanf("%s", escola[cont].nomeEscola);
@@ -47,7 +48,6 @@ void cadastrarEscola(escolas *escola, int cont){
         printf("Digite o nome do Responsavel pela Escola de Samba: %s \n",escola[cont].nomeEscola);
         scanf("%s", escola[cont].nomeResponsavelEscola);
         contadordeEscolasCad++;
-        //escola[cont].quesito=(Quesito*)malloc(13*sizeof(Quesito));
     }
     else{
         printf("\nnumero maximo de escolas ja cadastrado!");
@@ -120,7 +120,7 @@ void listarQuesitos(escolas *es,int numeroescola){
 
 void listarEscolas(escolas *es){
     int i=0;
-    for(i=0;i<2;i++){
+    for(i=0;i<10;i++){
         exibirDadosEscola(es,i);
         printf("\n---------------------------------------------------------------------------------------------------\n");
     }
@@ -142,13 +142,33 @@ float NotafinalQuesito(escolas * es,int numeroescola,int numeroquesito){
     es[numeroescola].quesito[numeroquesito].notaFinal=nota/3; 
     return nota/3;
 }
+void salvarCadastro(escolas *es){
+    FILE * arquivo;
+    int i;
+    arquivo=fopen("cadastroEscolas.txt","w+");
+    for(i=0;i<10;i++){
+        fprintf(arquivo,"%s %s\n",es[i].nomeEscola,es[i].nomeResponsavelEscola);
+    }
+    fclose(arquivo);
+    printf("\n Cadastro salvo com sucesso!");
+}
+void carregarDados(escolas * es){
+    FILE * arquivo;
+    int i;
+    arquivo=fopen("cadastroEscolas.txt","r");
+    for(i=0;i<10;i++){
+        fscanf(arquivo,"%s %s\n",&es[i].nomeEscola,&es[i].nomeResponsavelEscola);
+    }
+    fclose(arquivo);
+    printf("\n Dados carregados  com sucesso!");
+}
 
 void menu(escolas *es){
     int op,numEscola;
     char nome[20];
     printf("\nSeja bem vindo\n");
     do{
-        printf("\nMenu de opcoes: \n0-Sair do Programa\n1-Cadastrar Escola de Samba\n2-Buscar Escola de Samba\n3-Listar todas Escolas\n4-Avaliar Escola\n5-Calcular notaFinal de algum quesito\n");
+        printf("\nMenu de opcoes: \n0-Sair do Programa\n1-Cadastrar Escola de Samba\n2-Buscar Escola de Samba\n3-Listar todas Escolas\n4-Avaliar Escola\n5-Calcular notaFinal de algum quesito\n8-Salvar dados de escola de samba\n9-Carregar Dados de escolas \n");
         scanf("%d",&op);
         switch(op){
             case 0:
@@ -179,6 +199,13 @@ void menu(escolas *es){
                 NotafinalQuesito(es,numEscola,quesito);
                 printf("A nota final do quesito %s e: %f",es[numEscola].quesito[quesito].nomequesito,es[numEscola].quesito[quesito].notaFinal);
                 break;
+            case 8:
+                salvarCadastro(es);
+                break;
+            case 9:
+                carregarDados(es);
+                break;
+
 
         }
     }while(op!=0);
