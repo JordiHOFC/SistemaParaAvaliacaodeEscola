@@ -15,7 +15,7 @@ flutuante que varia de 7,0 a 10,0*, cada um desses juizes vai ser representado p
 int contadordeEscolasCad=0;
 
 typedef struct Squesito{
-    char nomequesito;
+    char nomequesito[50];
     float avaliacaoJurados[5];
     float notaFinal;
 
@@ -66,7 +66,7 @@ void exibirDadosEscola(escolas *es,int numeroescola){
     printf("\n Escola: %s",es[numeroescola].nomeEscola);
     printf("\n Responsavel: %s",es[numeroescola].nomeResponsavelEscola);
 
-    for(i=0;i<qtdQuesitos;i++){
+   /* for(i=0;i<qtdQuesitos;i++){
         printf("\n Nota do Quesito %s : ",es[numeroescola].quesito[i].nomequesito);
         printf("\n Nota do Avaliador 1: %.2f",es[numeroescola].quesito[i].avaliacaoJurados[0]);
         printf("\n Nota do Avaliador 2: %.2f",es[numeroescola].quesito[i].avaliacaoJurados[1]);
@@ -74,7 +74,7 @@ void exibirDadosEscola(escolas *es,int numeroescola){
         printf("\n Nota do Avaliador 4: %.2f",es[numeroescola].quesito[i].avaliacaoJurados[3]);
         printf("\n Nota do Avaliador 5: %.2f",es[numeroescola].quesito[i].avaliacaoJurados[4]);
         printf("\n\n Nota Final de %s: %.2f\n\n",es[numeroescola].quesito[i].nomequesito,es[numeroescola].quesito[i].notaFinal);
-    }
+    }*/
 
 
 
@@ -112,7 +112,7 @@ void listarQuesitos(escolas *es,int numeroescola){
     int i=0;
     for(i=0;i<13;i++){
         printf("\n---------------------------------------------------------------------------------------------------\n");
-        printf(" Nome do Quesito %s :  ID: %d",es[numeroescola].quesito[i].nomequesito,i);
+        printf(" Nome do Quesito  : %s  ID: %d",es[numeroescola].quesito[i].nomequesito,i);
         printf("\n---------------------------------------------------------------------------------------------------\n");
     }
 
@@ -122,8 +122,10 @@ void listarEscolas(escolas *es){
     int i=0;
     for(i=0;i<10;i++){
         exibirDadosEscola(es,i);
+        listarQuesitos(es,i);
         printf("\n---------------------------------------------------------------------------------------------------\n");
     }
+  
 
 }
 float NotafinalQuesito(escolas * es,int numeroescola,int numeroquesito){
@@ -154,21 +156,33 @@ void salvarCadastro(escolas *es){
 }
 void carregarDados(escolas * es){
     FILE * arquivo;
-    int i;
+    FILE *fp=fopen("nomequesito.txt","r");
+    int i,j;
+    
     arquivo=fopen("cadastroEscolas.txt","r");
+    
+    
     for(i=0;i<10;i++){
         fscanf(arquivo,"%s %s\n",&es[i].nomeEscola,&es[i].nomeResponsavelEscola);
+        for(j=0;j<13;j++){
+            fscanf(fp,"%s\n",&es[i].quesito[j].nomequesito);
+        }
+        rewind(fp);
     }
     fclose(arquivo);
     printf("\n Dados carregados  com sucesso!");
+    
+   
+    fclose(fp);
 }
+
 
 void menu(escolas *es){
     int op,numEscola;
     char nome[20];
     printf("\nSeja bem vindo\n");
     do{
-        printf("\nMenu de opcoes: \n0-Sair do Programa\n1-Cadastrar Escola de Samba\n2-Buscar Escola de Samba\n3-Listar todas Escolas\n4-Avaliar Escola\n5-Calcular notaFinal de algum quesito\n8-Salvar dados de escola de samba\n9-Carregar Dados de escolas \n");
+        printf("\nMenu de opcoes: \n0-Sair do Programa\n1-Cadastrar Escola de Samba\n2-Buscar Escola de Samba\n3-Listar todas Escolas\n4-Avaliar Escola\n5-Calcular notaFinal de algum quesito\n8-Salvar dados de escola de samba\n9-Carregar Dados de escolas\n10-CarregarQuesitos \n");
         scanf("%d",&op);
         switch(op){
             case 0:
@@ -204,7 +218,9 @@ void menu(escolas *es){
                 break;
             case 9:
                 carregarDados(es);
+                //carregarQuesitos(es);
                 break;
+            
 
 
         }
