@@ -25,6 +25,7 @@ typedef struct SescolaSamba{
     Quesito  quesito[13];
     char nomeEscola[20];
     char nomeResponsavelEscola[20];
+    float notafinal;
 
 
 }escolas;
@@ -36,6 +37,7 @@ int stringSize(char * string){
 
     return contador;
 }
+
 void cadastrarEscola(escolas *escola, int cont){
     int tamanhoNome;
     if(cont<=9){
@@ -66,7 +68,7 @@ void exibirDadosEscola(escolas *es,int numeroescola){
     printf("\n Escola: %s",es[numeroescola].nomeEscola);
     printf("\n Responsavel: %s",es[numeroescola].nomeResponsavelEscola);
 
-   /* for(i=0;i<qtdQuesitos;i++){
+    for(i=0;i<qtdQuesitos;i++){
         printf("\n Nota do Quesito %s : ",es[numeroescola].quesito[i].nomequesito);
         printf("\n Nota do Avaliador 1: %.2f",es[numeroescola].quesito[i].avaliacaoJurados[0]);
         printf("\n Nota do Avaliador 2: %.2f",es[numeroescola].quesito[i].avaliacaoJurados[1]);
@@ -74,14 +76,14 @@ void exibirDadosEscola(escolas *es,int numeroescola){
         printf("\n Nota do Avaliador 4: %.2f",es[numeroescola].quesito[i].avaliacaoJurados[3]);
         printf("\n Nota do Avaliador 5: %.2f",es[numeroescola].quesito[i].avaliacaoJurados[4]);
         printf("\n\n Nota Final de %s: %.2f\n\n",es[numeroescola].quesito[i].nomequesito,es[numeroescola].quesito[i].notaFinal);
-    }*/
+    }
 
 
 
 }
 int  buscarEscolaSamba(char * nome, escolas * escolas){
    int numerodaEscola=0,i=0;
-   for(i=0;i<2;i++){
+   for(i=0;i<10;i++){
        if(strcmp(nome,escolas[i].nomeEscola)==0){
            numerodaEscola=i;
            break;
@@ -108,6 +110,33 @@ void AvaliarEscolaSamba(escolas *es){
     }
     
 }
+/*void avaliacaoFinal(escolas *es){
+    int numEscola,i;
+    char nome[30];
+    float somatorio=0;
+    printf("\n Digite o nome da escola:\n");
+    scanf("%s",nome);
+    numEscola=buscarEscolaSamba(nome,es);
+    for(i=0;i<13;i++){
+        somatorio+=es[numEscola].quesito[i].notaFinal;
+    }
+    es[numEscola].notafinal=somatorio/13;
+
+
+}*/
+void avaliacaoFinal(escolas *es){
+    int numEscola,i,j;
+    char nome[30];
+    float somatorio=0;
+    for(i=0;i<10;i++){
+        for(j=0;j<13;j++){
+            somatorio+=es[i].quesito[j].notaFinal;
+        }
+        es[i].notafinal=somatorio/13;
+        somatorio=0;
+    }
+
+}
 void listarQuesitos(escolas *es,int numeroescola){
     int i=0;
     for(i=0;i<13;i++){
@@ -122,7 +151,7 @@ void listarEscolas(escolas *es){
     int i=0;
     for(i=0;i<10;i++){
         exibirDadosEscola(es,i);
-        listarQuesitos(es,i);
+        //listarQuesitos(es,i);
         printf("\n---------------------------------------------------------------------------------------------------\n");
     }
   
@@ -166,6 +195,7 @@ void carregarDados(escolas * es){
         fscanf(arquivo,"%s %s\n",&es[i].nomeEscola,&es[i].nomeResponsavelEscola);
         for(j=0;j<13;j++){
             fscanf(fp,"%s\n",&es[i].quesito[j].nomequesito);
+
         }
         rewind(fp);
     }
@@ -175,14 +205,80 @@ void carregarDados(escolas * es){
    
     fclose(fp);
 }
+void carregarNotas(escolas *es){
+    int i,j,k;
+    float valor;
+    FILE *arquivo=fopen("notas.txt","r");
+    for(i=0;i<10;i++){
+        for(j=0;j<13;j++){
+            fscanf(arquivo,"%f\n",&valor);
+            es[i].quesito[j].avaliacaoJurados[0]=valor;
+            es[i].quesito[j].avaliacaoJurados[1]=valor;
+            es[i].quesito[j].avaliacaoJurados[2]=valor;
+            es[i].quesito[j].avaliacaoJurados[3]=valor;
+            es[i].quesito[j].avaliacaoJurados[4]=valor;
+        }
+    }
+    printf("\n Dados carregados  com sucesso!");
+    fclose(arquivo);
+}
+void escolasVencedores(escolas* es){
+    float notasFinais[10],maior=0,Smaior=0;
+    int i,maior1,maior2;
+    maior1=es[0].notafinal;
+    for(i=0;i<10;i++){
+        notasFinais[i]=es[i].notafinal;
+        if(maior<notasFinais[i]){
+            maior=notasFinais[i];
+            maior1=i;
+        }
+    }
+    Smaior=es[0].notafinal;
+     for(i=0;i<10;i++){   
+        if(Smaior<notasFinais[i] && i!=maior1){
+            Smaior=notasFinais[i];
+            maior2=i;
+        }
+    }
+    printf("\nEscola Campea : %s com %f\nEscola Vice-Campea: %s com %f\n",es[maior1].nomeEscola,es[maior1].notafinal,es[maior2].nomeEscola,es[maior2].notafinal);
 
 
+}
+void escolasRebaixadas(escolas* es){
+    float notasFinais[10],menor=es[0].notafinal,Smenor=0;
+    int i,menor1,menor2;
+    menor1=es[0].notafinal;
+    for(i=0;i<10;i++){
+        notasFinais[i]=es[i].notafinal;
+        if(notasFinais[i]<menor){
+            menor=notasFinais[i];
+            menor1=i;
+        }
+    }
+    Smenor=es[0].notafinal;
+     for(i=0;i<10;i++){   
+        if(notasFinais[i]<Smenor && i!=menor1){
+            Smenor=notasFinais[i];
+            menor2=i;
+        }
+    }
+    printf("\nEscola rebaixada : %s com %f\nEscola rebaixada: %s com %f\n",es[menor1].nomeEscola,es[menor1].notafinal,es[menor2].nomeEscola,es[menor2].notafinal);
+
+
+}
+void listarNotasFinais(escolas *es){
+   int i;
+   for(i=0;i<10;i++){
+       printf("\nEscola %s  -- Notafinal: %f\n",es[i].nomeEscola, es[i].notafinal);
+   }
+}
 void menu(escolas *es){
-    int op,numEscola;
+    int op,numEscola,i,j;
     char nome[20];
     printf("\nSeja bem vindo\n");
     do{
-        printf("\nMenu de opcoes: \n0-Sair do Programa\n1-Cadastrar Escola de Samba\n2-Buscar Escola de Samba\n3-Listar todas Escolas\n4-Avaliar Escola\n5-Calcular notaFinal de algum quesito\n8-Salvar dados de escola de samba\n9-Carregar Dados de escolas\n10-CarregarQuesitos \n");
+
+        printf("\nMenu de opcoes: \n0-Sair do Programa\n1-Cadastrar Escola de Samba\n2-Buscar Escola de Samba\n3-Listar todas Escolas\n4-Avaliar Escola\n5-Calcular notaFinal de todos quesitode todas escolas\n6-Mostrar Escolas Vencedoras \n8-Salvar dados de escola de samba\n9-Carregar Dados de escolas\n10-CarregarNotas \n");
         scanf("%d",&op);
         switch(op){
             case 0:
@@ -203,7 +299,13 @@ void menu(escolas *es){
                 AvaliarEscolaSamba(es);
                 break;
             case 5:
-                printf("\n Digite o nome da escola:\n");
+                for(i=0;i<10;i++){
+                    for(j=0;j<13;j++){
+                        NotafinalQuesito(es,i,j);
+                    }
+                }
+                avaliacaoFinal(es);   
+               /* printf("\n Digite o nome da escola:\n");
                 scanf("%s",nome);
                 numEscola=buscarEscolaSamba(nome,es);
                 listarQuesitos(es,numEscola);
@@ -211,15 +313,24 @@ void menu(escolas *es){
                 int quesito;
                 scanf("%d",&quesito);
                 NotafinalQuesito(es,numEscola,quesito);
-                printf("A nota final do quesito %s e: %f",es[numEscola].quesito[quesito].nomequesito,es[numEscola].quesito[quesito].notaFinal);
+                printf("A nota final do quesito %s e: %f",es[numEscola].quesito[quesito].nomequesito,es[numEscola].quesito[quesito].notaFinal);*/
+                break;
+            case 6:
+                listarNotasFinais(es);
+                escolasVencedores(es);    
+                break;
+            case 7:
+                escolasRebaixadas(es);
                 break;
             case 8:
                 salvarCadastro(es);
                 break;
             case 9:
                 carregarDados(es);
-                //carregarQuesitos(es);
                 break;
+            case 10:
+                 carregarNotas(es);
+                 break;
             
 
 
@@ -234,28 +345,8 @@ int main(){
     escolas es[10];
     int i;
     char nome[12];
-   // scanf("%s", nome);
-    //printf("%d",stringSize(nome));
-   /* cadastrarEscola(es,contadordeEscolasCad);
-    
-    AvaliarEscolaSamba(es);
-    listarEscolas(es);*/
+   
     menu(es);
-    /*
-    cadastrarEscola(es,contadordeEscolasCad);
-    cadastrarEscola(es,contadordeEscolasCad);
-    es[0].quesito[0].nomequesito='paidrinks';
-    for(i=0;i<2;i++){
-        printf("\n%s",es[i].nomeEscola);
-        printf("\n%s",es[i].quesito[i].nomequesito);
 
-    }
-   */
-    /*es[0].quesito[0].notaFinal=3.5;
-    es[1].quesito[1].notaFinal=3.3;
-    printf("%f",es[0].quesito[0].notaFinal);
-    printf("%f",es[1].quesito[1].notaFinal);*/
-
-    
     return 0;
 }
