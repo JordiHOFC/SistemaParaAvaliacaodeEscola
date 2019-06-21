@@ -178,7 +178,7 @@ void notaFinalQuesito(int numEscola, escolas *es,int numQuesito,int numJurado,fl
             menor=es[numEscola].quesito[numQuesito].avaliacaoJurados[numJurado];
         }
         somatorio+=es[numEscola].quesito[numQuesito].avaliacaoJurados[numJurado];
-        printf("\n maior  : %f e menor: %f",maior,menor);
+        //printf("\n maior  : %f e menor: %f",maior,menor);
        return notaFinalQuesito(numEscola,es,numQuesito,numJurado-1,somatorio,maior,menor);
     }
     if(numJurado<0)
@@ -188,7 +188,7 @@ void notaFinalQuesito(int numEscola, escolas *es,int numQuesito,int numJurado,fl
         es[numEscola].quesito[numQuesito].notaFinal=(somatorio-(maior+menor))/3;
         //numJurado--;
         
-        printf("\nnotafinal  do quesito:  %f ",es[numEscola].quesito[numQuesito].notaFinal);
+       // printf("\nnotafinal  do quesito:  %f ",es[numEscola].quesito[numQuesito].notaFinal);
 
     }
     
@@ -213,7 +213,7 @@ void salvarCadastro(escolas *es){
     FILE * arquivo;
     int i;
     arquivo=fopen("cadastroEscolas.txt","w+");
-    for(i=0;i<10;i++){
+    for(i=0;i<quantidade;i++){
         fprintf(arquivo,"%s %s\n",es[i].nomeEscola,es[i].nomeResponsavelEscola);
     }
     fclose(arquivo);
@@ -259,7 +259,7 @@ void carregarNotas(escolas *es){
     fclose(arquivo);
 }
 void escolasVencedores(escolas* es){
-    float notasFinais[10],maior=0,Smaior=0;
+    float notasFinais[quantidade],maior=0,Smaior=0;
     int i,maior1,maior2;
     maior1=es[0].notafinal;
     for(i=0;i<quantidade;i++){
@@ -271,7 +271,7 @@ void escolasVencedores(escolas* es){
     }
     Smaior=es[0].notafinal;
      for(i=0;i<quantidade;i++){   
-        if(Smaior<notasFinais[i] && i!=maior1){
+        if(Smaior<=notasFinais[i] && i!=maior1){
             Smaior=notasFinais[i];
             maior2=i;
         }
@@ -281,7 +281,7 @@ void escolasVencedores(escolas* es){
 
 }
 void escolasRebaixadas(escolas* es){
-    float notasFinais[10],menor=es[0].notafinal,Smenor=0;
+    float notasFinais[quantidade],menor=es[0].notafinal,Smenor=0;
     int i,menor1,menor2;
     menor1=es[0].notafinal;
     for(i=0;i<quantidade;i++){
@@ -293,7 +293,7 @@ void escolasRebaixadas(escolas* es){
     }
     Smenor=es[0].notafinal;
      for(i=0;i<quantidade;i++){   
-        if(notasFinais[i]<Smenor && i!=menor1){
+        if(notasFinais[i]<=Smenor && menor1!=i){
             Smenor=notasFinais[i];
             menor2=i;
         }
@@ -314,7 +314,7 @@ void menu(escolas *es){
     printf("\nSeja bem vindo\n");
     do{
 
-        printf("\nMenu de opcoes: \n0-Sair do Programa\n1-Cadastrar Escola de Samba\n2-Buscar Escola de Samba\n3-Listar todas Escolas\n4-Avaliar Escola\n5-Calcular notaFinal de todos quesitode todas escolas\n6-Mostrar Escolas Vencedoras \n8-Salvar dados de escola de samba\n9-Carregar Dados de escolas\n10-CarregarNotas \n");
+        printf("\nMenu de opcoes: \n0-Sair do Programa\n1-Cadastrar Escola de Samba\n2-Buscar Escola de Samba\n3-Listar todas Escolas\n4-Avaliar Escola\n5-Calcular notaFinal de quesitos e escolas\n6-Mostrar Escolas Vencedoras\n7-Mostrar Escolas Rebaixadas\n8-Salvar dados de escola de samba\n9-Carregar Dados de escolas\n10-CarregarNotas \n");
         scanf("%d",&op);
         switch(op){
             case 0:
@@ -335,7 +335,7 @@ void menu(escolas *es){
                 AvaliarEscolaSamba(es);
                 break;
             case 5:
-                for(i=0;i<10;i++){
+                for(i=0;i<quantidade;i++){
                     for(j=0;j<13;j++){
                         notaFinalQuesito(i,es,j,4,0,-1,10);
                     }
@@ -347,6 +347,7 @@ void menu(escolas *es){
                 escolasVencedores(es);    
                 break;
             case 7:
+                listarNotasFinais(es);
                 escolasRebaixadas(es);
                 break;
             case 8:
@@ -371,7 +372,7 @@ void menu(escolas *es){
 int main(){
     int i;
     printf("Digite quantas escolas deseja cadastrar\n");
-    scanf("%d",&quantidade);
+    scanf("%d", &quantidade);
     escolas *es=(escolas*)malloc(quantidade*sizeof(escolas));
    
    
