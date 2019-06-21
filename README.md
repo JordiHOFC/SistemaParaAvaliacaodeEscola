@@ -1,5 +1,7 @@
 # SistemaParaAvaliacaodeEscola
 Sistema para avaliação de escolas de samba 
+
+
 Neste programa é permitido:
 1 - cadastrar  escolas de samba.
 2 - Avaliar cada um dos 13 quesitos.
